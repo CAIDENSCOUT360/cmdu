@@ -1,0 +1,571 @@
+/* ─── BASE ───────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  /* Ambient 3D light source — soft radial glow from top-left and bottom-right */
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(197, 160, 89, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 85%, rgba(0, 51, 102, 0.07) 0%, transparent 55%),
+    #f7f5f0;
+  color: #1a1a1a;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ─── CUSTOM FONT CLASSES ────────────────────────────────────────────────── */
+
+.cinzel {
+  font-family: "Cinzel", Georgia, serif;
+}
+
+.serif {
+  font-family: "Lora", Georgia, "Times New Roman", serif;
+}
+
+.sans {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ─── STICKY NAV — 3D depth bar ─────────────────────────────────────────── */
+
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  /* Gradient simulates a top-lit 3D bar */
+  background: linear-gradient(180deg, #0a4a8c 0%, #003f7a 30%, #003366 65%, #002244 100%);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* ─── CROSS LOGO — floating 3D rotation ────────────────────────────────── */
+
+@keyframes float-cross {
+  0%   { transform: translateY(0px) rotateY(0deg) rotateX(0deg); }
+  20%  { transform: translateY(-2px) rotateY(10deg) rotateX(4deg); }
+  50%  { transform: translateY(0px) rotateY(0deg) rotateX(0deg); }
+  70%  { transform: translateY(2px) rotateY(-10deg) rotateX(-4deg); }
+  100% { transform: translateY(0px) rotateY(0deg) rotateX(0deg); }
+}
+
+.cross-logo {
+  transform-style: preserve-3d;
+  animation: float-cross 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ─── NAV TABS ───────────────────────────────────────────────────────────── */
+
+.nav-tab {
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.2s, border-color 0.2s, text-shadow 0.2s;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 4px;
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.nav-tab:hover {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 0 12px rgba(197, 160, 89, 0.5);
+}
+
+.nav-tab.active {
+  color: #c5a059;
+  border-bottom-color: #c5a059;
+  text-shadow: 0 1px 8px rgba(197, 160, 89, 0.6);
+}
+
+/* ─── QUICK SEARCH TAGS — 3D press pill ─────────────────────────────────── */
+
+.ref-tag {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: linear-gradient(170deg, #ffffff 0%, #f0ecf4 100%);
+  border: 1px solid rgba(0, 51, 102, 0.35);
+  color: #003366;
+  white-space: nowrap;
+  cursor: pointer;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 3px;
+  /* Raised 3D look */
+  box-shadow:
+    0 3px 0 rgba(0, 51, 102, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s;
+  transform: translateY(0);
+}
+
+.ref-tag:hover {
+  background: linear-gradient(170deg, #1a4d8c 0%, #003366 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 rgba(0, 20, 50, 0.35),
+    0 6px 14px rgba(0, 51, 102, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.ref-tag:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 rgba(0, 20, 50, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.12),
+    inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Horizontal scroll row — hides scrollbar visually */
+.quick-tags-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  /* Extra depth under the scroll row */
+  perspective: 600px;
+}
+
+.quick-tags-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── DENOMINATION CARD — CSS perspective tilt ──────────────────────────── */
+
+/* The outer wrapper establishes the 3D perspective context */
+.card-3d-wrap {
+  perspective: 900px;
+  perspective-origin: 50% 50%;
+}
+
+/* The card itself tilts on mouse move via CSS custom props set in JS */
+.card-3d {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  transform-style: preserve-3d;
+  transform:
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y))
+    translateZ(0px);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  will-change: transform;
+  /* Base resting shadow */
+  box-shadow:
+    0 2px 8px rgba(0, 51, 102, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.card-3d:hover {
+  transform:
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y))
+    translateZ(10px);
+  box-shadow:
+    0 20px 40px rgba(0, 51, 102, 0.18),
+    0 8px 16px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* "Lifted" inner content layer — extends 3D illusion */
+.card-3d .card-inner {
+  transform-style: preserve-3d;
+}
+
+/* Top colour bar appears to float above the card surface */
+.card-3d .card-top-bar {
+  transform: translateZ(3px);
+  position: relative;
+}
+
+.denom-card {
+  transition: box-shadow 0.12s;
+}
+
+/* ─── 3D PRESS BUTTON ────────────────────────────────────────────────────── */
+
+.btn-3d {
+  position: relative;
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.28),
+    0 6px 14px rgba(0, 0, 0, 0.16);
+  transform: translateY(0);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn-3d:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 rgba(0, 0, 0, 0.24),
+    0 10px 20px rgba(0, 0, 0, 0.18);
+}
+
+.btn-3d:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.22),
+    0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── CHAPTER BUTTON ─────────────────────────────────────────────────────── */
+
+.chapter-btn {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  min-width: 30px;
+  min-height: 30px;
+  background: linear-gradient(160deg, #ffffff 0%, #ece8e0 100%);
+  border: 1px solid #d5cfc5;
+  color: #555;
+  border-radius: 3px;
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.18),
+    0 3px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  cursor: pointer;
+  transform: translateY(0);
+}
+
+.chapter-btn:hover {
+  background: linear-gradient(160deg, #1a4d8c 0%, #003366 100%);
+  color: white;
+  border-color: #002244;
+  box-shadow:
+    0 3px 0 rgba(0, 20, 50, 0.35),
+    0 5px 12px rgba(0, 51, 102, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.chapter-btn.active {
+  background: linear-gradient(160deg, #003f7a 0%, #002244 100%);
+  color: white;
+  border-color: #001833;
+  box-shadow:
+    0 1px 0 rgba(0, 10, 30, 0.4),
+    0 2px 6px rgba(0, 51, 102, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.25);
+  transform: translateY(1px);
+}
+
+.chapter-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 0px 0 rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── HERO VERSE SECTION — embossed stone tablet ────────────────────────── */
+
+.hero-emboss {
+  background: linear-gradient(145deg, #ffffff 0%, #f9f6f0 40%, #f2ede4 100%);
+  box-shadow:
+    0 10px 40px rgba(0, 51, 102, 0.14),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* Subtle inner glow on the verse text */
+.hero-emboss .verse-text-shadow {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8),
+    0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* ─── COMPARE CHECKBOX ───────────────────────────────────────────────────── */
+
+.compare-checkbox {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border: 2px solid #003366;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #f7f5f0 0%, #e8e4dc 100%);
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.compare-checkbox.checked {
+  background: linear-gradient(145deg, #1a4d8c 0%, #003366 100%);
+  border-color: #002244;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.25),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: scale(0.97);
+}
+
+/* ─── AUDIO PLAYER — 3D shelf/tray ──────────────────────────────────────── */
+
+.audio-player {
+  background: linear-gradient(180deg, #004080 0%, #003366 50%, #002244 100%);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Play/stop button 3D pill */
+.audio-play-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #c5b060 0%, #c5a059 50%, #a8863d 100%);
+  border: none;
+  color: #003366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.3),
+    0 6px 14px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.1s, box-shadow 0.1s;
+  transform: translateY(0);
+}
+
+.audio-play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 rgba(0, 0, 0, 0.25),
+    0 10px 18px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.audio-play-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.25),
+    0 2px 5px rgba(0, 0, 0, 0.15),
+    inset 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.audio-stop-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #d43838 0%, #c8102e 50%, #a00c24 100%);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.3),
+    0 5px 10px rgba(200, 16, 46, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.1s, box-shadow 0.1s;
+  transform: translateY(0);
+}
+
+.audio-stop-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.25),
+    0 7px 14px rgba(200, 16, 46, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.audio-stop-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.25),
+    inset 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.audio-stop-btn:disabled {
+  opacity: 0.38;
+}
+
+/* ─── STUDY PANEL — deep layered shadow ─────────────────────────────────── */
+
+/* Desktop: slides in from the right */
+@media (min-width: 768px) {
+  .study-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 38rem;
+    background: linear-gradient(160deg, #fdfbf8 0%, #f7f5f0 100%);
+    border-left: 4px solid #c8102e;
+    box-shadow:
+      -6px 0 40px rgba(0, 0, 0, 0.28),
+      -2px 0 12px rgba(0, 0, 0, 0.2),
+      inset 1px 0 0 rgba(255, 255, 255, 0.5);
+    overflow-y: auto;
+    animation: slideInRight 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    z-index: 101;
+  }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Mobile: slides up from the bottom as a sheet */
+@media (max-width: 767px) {
+  .study-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 88vh;
+    background: linear-gradient(160deg, #fdfbf8 0%, #f7f5f0 100%);
+    border-top: 4px solid #c8102e;
+    border-radius: 18px 18px 0 0;
+    box-shadow:
+      0 -6px 40px rgba(0, 0, 0, 0.28),
+      0 -2px 12px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    overflow-y: auto;
+    animation: slideInUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    z-index: 101;
+  }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ─── MOBILE BOTTOM NAV — 3D raised shelf ───────────────────────────────── */
+
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62px;
+  background: linear-gradient(180deg, #004080 0%, #003366 50%, #002244 100%);
+  display: flex;
+  align-items: stretch;
+  z-index: 40;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 -4px 20px rgba(0, 0, 0, 0.35),
+    0 -1px 6px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mobile-bottom-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s, background 0.2s, text-shadow 0.2s;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  min-height: 44px;
+}
+
+.mobile-bottom-tab.active {
+  color: #c5a059;
+  background: rgba(255, 255, 255, 0.07);
+  text-shadow: 0 0 10px rgba(197, 160, 89, 0.55);
+}
+
+.mobile-bottom-tab.active svg {
+  filter: drop-shadow(0 0 4px rgba(197, 160, 89, 0.6));
+}
+
+.mobile-bottom-tab:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ─── SEARCH INPUT — recessed 3D inset ──────────────────────────────────── */
+
+.search-input-3d {
+  background: linear-gradient(170deg, #f5f1e8 0%, #ffffff 100%);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(0, 0, 0, 0.07),
+    0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: box-shadow 0.2s;
+  border: 1px solid #d5cfc5;
+}
+
+.search-input-3d:focus {
+  box-shadow:
+    inset 0 2px 5px rgba(0, 51, 102, 0.1),
+    inset 0 1px 2px rgba(0, 51, 102, 0.07),
+    0 0 0 2px rgba(0, 51, 102, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.9);
+  outline: none;
+  border-color: #003366;
+}
+
+/* ─── UTILITIES ──────────────────────────────────────────────────────────── */
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .cross-logo { animation: none; }
+  .card-3d    { transition: none; }
+  .btn-3d     { transition: none; }
+  .ref-tag    { transition: none; }
+  .chapter-btn { transition: none; }
+  .audio-play-btn { transition: none; }
+  .audio-stop-btn { transition: none; }
+  .study-panel { animation: none; }
+}
+
