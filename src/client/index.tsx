@@ -231,7 +231,8 @@ function App() {
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text
         || 'Communication with the archive failed.';
       setLegalAnswer(text);
-    } catch {
+    } catch (err) {
+      console.error('Gemini API error:', err);
       setLegalAnswer('<p style="color:#f87171">CRITICAL_CONNECTION_ERROR: UNABLE_TO_HANDSHAKE_WITH_GEMINI_NODE.</p>');
     } finally {
       setIsLoading(false);
